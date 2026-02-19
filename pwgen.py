@@ -11,6 +11,7 @@ import hmac
 import os
 from hashlib import sha256
 
+__version__ = "1.0.0"
 
 SCENARIOS = {
     "offline": 10.0,            # guesses/sec (rate-limited login-ish baseline)
@@ -160,6 +161,7 @@ def parse_arguments():
     parser.add_argument("--scenario", choices=list(SCENARIOS.keys()), default="offline-fast", help="Brute-force scenario for time estimate (default: offline-fast)")
     parser.add_argument("--rate", type=float, default=None, help="Override guesses/sec used for estimate (e.g. 1e10)")
     parser.add_argument("--no-strength", action="store_true", help="Do not print entropy / brute-force estimate")
+    parser.add_argument("--version", action="version", version=f"pwgen-lite {__version__}", help="Show Programs current version")   
 
     return parser.parse_args()                    
 

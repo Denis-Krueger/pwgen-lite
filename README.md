@@ -12,54 +12,61 @@ Minimal password generator written in Python.
 - Brute-force strength estimate (entropy + time model)
 - Clean CLI interface
 - Test suite with pytest
+- Proper exit codes for invalid CLI usage
+- Versioned release (`--version`)
 
 ## Usage
 
-Generate a 16-character password:
+### Generate a 16-character password:
 ```bash
-python pwgen.py 16
+python3 pwgen.py 16
 ```
 
-Generate a 16-character password including symbols:
+### Generate a 16-character password including symbols:
 ```bash
-python pwgen.py 16 --symbols
+python3 pwgen.py 16 --symbols
 ```
 
-Generate 5 passwords including symbols:
+### Generate 5 passwords including symbols:
 ```bash
-python pwgen.py 16 --symbols --count 5
+python3 pwgen.py 16 --symbols --count 5
 ```
 
-Use HMAC mode with fixed seed (deterministic output):
+### Use HMAC mode with fixed seed (deterministic output):
 ```bash
 python3 pwgen.py 16 --mode hmac --seed-hex <64-hex-chars>
 ```
 
-Disable strength output:
+### Disable strength output:
 ```bash
 python3 pwgen.py 16 --no-strength
 ```
 
-Show help
+### Show help
 ```bash
-python pwgen.py --help
+python3 pwgen.py --help
+```
+### Show version
+```bash
+python3 pwgen.py --version
 ```
 
 ## Password Strength Model
 Let:
 - `A` = alphabet size
 - `L` = password length
-Search space:
+
+### Search space:
 ```
 A^L
 ```
 
-Entropy (bits):
+### Entropy (bits):
 ```
 L * log2(A)
 ```
 
-Average brute-force time:
+### Average brute-force time:
 ```
 0.5 * A^L / R
 ```
@@ -77,13 +84,13 @@ Where `R` = guesses per second.
 ```bash
 python3 pwgen.py 16 --rate 5e9
 ```
-> Strength estimate assumes uniformly random passwords and brute-force 
-> only. Real cracking speed depends heavily on hash algorithm and attack > conditions.
+> Strength estimate assumes uniformly random passwords and brute-force only.
+> Real cracking speed depends heavily on hash algorithm and attack conditions.
 
 
 ## Design Principles
 - Secure by default
-- Avoid predictable randomness (random is not used)
+- Avoid insecure PRNG usage (e.g., `random`)
 - Avoid modulo bias
 - Clear separation of concerns
 - Deterministic testing support
@@ -92,40 +99,29 @@ python3 pwgen.py 16 --rate 5e9
 
 ## Testing
 
-Install pytest:
-
 ```bash
-python -m pip install pytest
+make test
 ```
-Run tests:
-```bash
-pytest
-```
----
 
-## Ensure imports work
-For the tests to import `pwgen`, run pytest from the repo root:
-
+Or manually:
 ```bash
-pytest
+python3 -m pytest
 ```
-If it complains it can’t find `pwgen`, run:
-```bash 
-python -m pytest
-```
+Run tests from the repository root.
 
 ## RNG Modes
 
 **secrets (default)**
  uses Python's `secrets` module 
  recommended for real-world use.
+
 **hmac (educational)** 
 HMAC-SHA256 based deterministic generator.
 - Same seed → same password sequence
 - Demonstrates counter-based deterministic random byte generation
 - Includes rejection sampling to avoid modulo bias
 
-Examples:
+## Examples:
 
 ```bash
 python3 pwgen.py 16
@@ -134,6 +130,42 @@ python3 pwgen.py 16 --mode hmac
 python3 pwgen.py 16 --mode hmac --seed-hex <64-hex-chars>
 ```
 
+## Development Workflow (Makefile)
+
+For convenience, this project includes a small `Makefile` to simplify
+common development tasks.
+
+### Create virtual environment
+```bash
+make venv
+```
+### Install development dependencies (pytest)
+```bash
+make install
+```
+
+### Run tests
+```bash
+make test
+```
+
+### Run the tool
+```bash
+make run ARGS="[length] [--arg1] [--arg2] [--arg3]..."
+```
+
+### Clean project artifacts
+```bash
+make clean
+```
+
+### Show all available development tasks
+```bash
+make help
+```
+The Makefile uses a local virtual environment inside `.venv/`
+to avoid modifying the system Python installation.
+This ensures reproducible testing and avoids dependency pollution.
 
 ## Goals
 
